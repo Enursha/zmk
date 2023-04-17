@@ -42,6 +42,10 @@
     };
 };
 
+&bootloader_key_left {
+    status = "okay";
+};
+
 &pinctrl {
     spi2_default: spi2_default {
         group1 {

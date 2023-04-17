@@ -47,7 +47,10 @@
         output-ohms = <1960000>;
         full-ohms = <(1960000 + 810000)>;
     };
+};
 
+&bootloader_key_left {
+    status = "okay";
 };
 
 &pinctrl {

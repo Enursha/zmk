@@ -57,6 +57,10 @@
     col-offset = <6>;
 };
 
+&bootloader_key_right {
+    status = "okay";
+};
+
 &pinctrl {
     spi0_default: spi0_default {
         group1 {

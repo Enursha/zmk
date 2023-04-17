@@ -57,7 +57,18 @@
                             RC(3,3) RC(3,4) RC(3,5)  RC(3,6) RC(3,7) RC(3,8)
         >;
     };
-
+    bootloader_key_left: bootloader_key_left {
+        compatible = "zmk,boot-magic-key";
+        key-position = <0>;
+        jump-to-bootloader;
+        status = "disabled";
+    };
+    bootloader_key_right: bootloader_key_right {
+        compatible = "zmk,boot-magic-key";
+        key-position = <9>;
+        jump-to-bootloader;
+        status = "disabled";
+    };
 };
 
 &adc {
