@@ -307,6 +307,36 @@ bt_addr_le_t *zmk_ble_active_profile_addr() { return &profiles[active_profile].p
 
 char *zmk_ble_active_profile_name() { return profiles[active_profile].name; }
 
+void zmk_ble_unpair_all(void) {
+    int err;
+
+    LOG_WRN("Clearing all existing BLE bond information from the keyboard");
+
+    bt_unpair(BT_ID_DEFAULT, NULL);
+
+    for (int i = 0; i < 8; i++) {
+        char setting_name[15];
+        sprintf(setting_name, "ble/profiles/%d", i);
+
+        err = settings_delete(setting_name);
+        if (err) {
+            LOG_ERR("Failed to delete setting: %d", err);
+        }
+    }
+
+    // Hardcoding a reasonable hardcoded value of peripheral addresses
+    // to clear so we properly clear a split central as well.
+    for (int i = 0; i < 8; i++) {
+        char setting_name[32];
+        sprintf(setting_name, "ble/peripheral_addresses/%d", i);
+
+        err = settings_delete(setting_name);
+        if (err) {
+            LOG_ERR("Failed to delete setting: %d", err);
+        }
+    }
+}
+
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 
 int zmk_ble_put_peripheral_addr(const bt_addr_le_t *addr) {
@@ -647,33 +677,8 @@ static int zmk_ble_init(const struct device *_arg) {
 #endif
 
 #if IS_ENABLED(CONFIG_ZMK_BLE_CLEAR_BONDS_ON_START)
-    LOG_WRN("Clearing all existing BLE bond information from the keyboard");
-
-    bt_unpair(BT_ID_DEFAULT, NULL);
-
-    for (int i = 0; i < 8; i++) {
-        char setting_name[15];
-        sprintf(setting_name, "ble/profiles/%d", i);
-
-        err = settings_delete(setting_name);
-        if (err) {
-            LOG_ERR("Failed to delete setting: %d", err);
-        }
-    }
-
-    // Hardcoding a reasonable hardcoded value of peripheral addresses
-    // to clear so we properly clear a split central as well.
-    for (int i = 0; i < 8; i++) {
-        char setting_name[32];
-        sprintf(setting_name, "ble/peripheral_addresses/%d", i);
-
-        err = settings_delete(setting_name);
-        if (err) {
-            LOG_ERR("Failed to delete setting: %d", err);
-        }
-    }
-
-#endif // IS_ENABLED(CONFIG_ZMK_BLE_CLEAR_BONDS_ON_START)
+    zmk_ble_unpair_all();
+#endif
 
     bt_conn_cb_register(&conn_callbacks);
     bt_conn_auth_cb_register(&zmk_ble_auth_cb_display);
